@@ -35,7 +35,12 @@ pipeline {
                 echo 'Deploying website to Vercel...'
 
                 sh '''
-                    npx vercel --prod --yes --token="$VERCEL_TOKEN"
+                    docker run --rm \
+                        -e VERCEL_TOKEN="$VERCEL_TOKEN" \
+                        -v "$PWD:/app" \
+                        -w /app \
+                        node:22 \
+                        npx vercel --prod --yes --token="$VERCEL_TOKEN"
                 '''
             }
         }
