@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        VERCEL_TOKEN = credentials('vercel-token-devops-test')
+    }
+
     stages {
 
         stage('Checkout') {
@@ -28,7 +32,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploy stage will be configured next.'
+                echo 'Deploying website to Vercel...'
+
+                sh '''
+                    npx vercel --prod --yes --token="$VERCEL_TOKEN"
+                '''
             }
         }
     }
@@ -36,10 +44,11 @@ pipeline {
     post {
         success {
             echo 'BUILD SUCCESS'
+            echo 'DEPLOY SUCCESS'
         }
 
         failure {
-            echo 'BUILD FAILED'
+            echo 'BUILD FAILED OR DEPLOY FAILED'
         }
     }
 }
